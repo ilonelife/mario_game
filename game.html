@@ -174,10 +174,12 @@
                 $jump = true;
                 score = 0;
 
+                // 군바 블록이 애니메이션 걸려 있기 때문에 , 게임 종료 시 정지 시켜야 한다 
                 $("#gumba_block").stop();
                 $("#gumba_block").css("left", "");
                 $("#gumba_block").css("right", "10px");
 
+                // 마리오가 죽으면, 게임 시 설정했던 인터벌을 초기화 시킨다.
                 clearInterval(marioInterval);
                 clearInterval(gumbaInterval);
                 clearInterval(scoreInterval);
