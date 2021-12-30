@@ -78,28 +78,10 @@
         <div id="game_start">
             <h1>!! 마리오 게임 !!</h1>
             <br/>
-            <div>개발자 : </div>
-            <input type="text" name="dev_name" id="dev_id"/><br/><br/>
-            <img src="man.gif" width="100">
+            <div>개발자 : 이 일 원</div>
+            <img src="man.gif">
             <br/><br/><br/>
             <button id="startBtn"><h3>시작</h3></button>
-            <br/><br/>
-            <center>
-                <div>
-                    <table border="1" id='rank_table'>
-                        <th>
-                            랭킹
-                        </th>
-                        <th>
-                            이름
-                        </th>
-                        <th>
-                            점수
-                        </th>
-                    </table>
-                </div>
-            </center>
-            
         </div>
 
         <div id="main">
@@ -107,7 +89,8 @@
             <div id="mario_block"><img id="mario" src="man.gif"></div>
             <div id="gumba_block"><img id="gumba" src="gb.gif"></div>
             <div id="killer_block"><img id="killer" src="killer.jpeg"></div>
-            <div id="score">점수 : 0 </div>
+            <div id="score">점수 :
+            </div>
         </div>
 
         <div id="game_over">
@@ -122,9 +105,6 @@
         var jump = false;
         var killer = false;
         var score = 0;
-        var dev_name;
-        var ranks = [];
-        var rankTable = $("#rank_table");
 
         var marioInterval;
         var gumbaInterval;
@@ -138,17 +118,12 @@
 
         function game_start() { //게임중 화면
 
-            // score = 0;
-
-            let inputName = $("#dev_id")
-                .val()
-                .substr(0, 3);
-            dev_name = `${inputName}${ '?'.repeat(3 - inputName.length)}`;
+            score = 0;
 
             setTimeout(gumba_start, 1000);
             marioInterval = setInterval(mario_down, 10);
             gumbaInterval = setInterval(gumba_down, 10);
-            // scoreInterval = setInterval(set_score(score), 10);
+            scoreInterval = setInterval(set_score, 10);
         }
 
         function gumba_start() {
@@ -166,7 +141,6 @@
 
                 if (alive == "block") {
                     score = score + 100;
-                    set_score(score);
                 }
                 $("#gumba_block").css("left", "");
                 $("#gumba_block").css("right", "10px");
@@ -189,7 +163,7 @@
             });
         }
 
-        function set_score(score) {
+        function set_score() {
             $("#score").text("점수 : " + score);
 
         }
@@ -200,7 +174,7 @@
             if (beat <= 110 && jump == false) {
                 $("#mario_block").hide();
                 $jump = true;
-               // score = 0;
+                score = 0;
 
                 // 군바 블록이 애니메이션 걸려 있기 때문에 , 게임 종료 시 정지 시켜야 한다 
                 $("#gumba_block").stop();
@@ -211,10 +185,6 @@
                 clearInterval(marioInterval);
                 clearInterval(gumbaInterval);
                 clearInterval(scoreInterval);
-
-                rankSave(dev_name, score);
-                score = 0;
-                set_score(score);
                 
                 $("#main").hide();
                 $("#game_over").show();
@@ -230,7 +200,6 @@
             // 군바와 킬러가 충돌했다면
             if (beat1 - beat2 < 50 && killer == true) {
                 score = score + 150;
-                set_score(score);
                 killer = false;
                 $("#killer_block").hide();
                 $("#killer_block").css("left", "50px");
@@ -242,43 +211,6 @@
                 $("#gumba_block").hide();
                 setTimeout(gumba_start, random_speed - 1000);
             }
-        }
-
-
-        // 랭킹 - 테이블에 추가
-        function rankLoad(score) {
-          // 기존 내용 지우기
-            rankTable.empty();
-
-            rankTable.append('<th>랭킹</th><th>이름</th><th>점수</th>');
-
-          // ranks 배열에 있는 랭킹정보 테이블에 추가
-            for (let i = 0; i < ranks.length; i++) {
-                let rank = ranks[i];
-                rankTable.append(`<tr><td>${i+1}</td><td>${rank.name}</td><td>${rank.score}</td></tr>`);
-            }
-        }
-
-        // 랭킹 - 정보 추가
-        function rankSave(name, score) {
-            let newRank = {
-                name: name,
-                score: score
-            };
-
-            ranks.push(newRank);
-
-            ranks.sort(function (a, b) {
-                return b.score - a.score;
-            });
-        }
-
-        function gameLogin() {
-            // 화면 - 로그인
-            $("#game_over").hide();
-            $("#game_start").show();
-
-            rankLoad();
         }
 
         $(function () {
@@ -294,7 +226,10 @@
             })
 
             $("#restartBtn").click(function () {
-                gameLogin();
+                $("#game_over").hide();
+                $("#main").show();
+
+                game_start();
             })
 
             $("body").keydown(function (event) {
